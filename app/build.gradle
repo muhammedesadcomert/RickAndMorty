@@ -24,8 +24,12 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "RICK_AND_MORTY_BASE_URL", "\"https://rickandmortyapi.com/api/\""
+        }
+        debug {
+            buildConfigField "String", "RICK_AND_MORTY_BASE_URL", "\"https://rickandmortyapi.com/api/\""
         }
     }
     compileOptions {
@@ -73,6 +77,16 @@ dependencies {
 
     // Coil
     implementation 'io.coil-kt:coil-compose:2.2.2'
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+
+    // Define a BOM and its version
+    implementation platform("com.squareup.okhttp3:okhttp-bom:4.10.0")
+    // Define any required OkHttp artifacts without version
+    implementation 'com.squareup.okhttp3:okhttp'
+    implementation 'com.squareup.okhttp3:logging-interceptor'
 
     // Test
     testImplementation 'junit:junit:4.13.2'
