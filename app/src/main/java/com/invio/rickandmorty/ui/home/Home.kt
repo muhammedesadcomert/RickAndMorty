@@ -21,7 +21,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.invio.rickandmorty.R
-import com.invio.rickandmorty.util.NetworkResponse
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +33,7 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Rick and Morty")
+                    Text(text = stringResource(id = R.string.app_name))
                 },
             )
         },
@@ -46,7 +45,12 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
                 Snackbar(
                     action = {
                         TextButton(
-                            onClick = { viewModel.getCharacters() },
+                            onClick = {
+                                viewModel.run {
+                                    getCharacters()
+                                    getLocations()
+                                }
+                            },
                         ) {
                             Text(text = stringResource(R.string.retry))
                         }
@@ -70,60 +74,56 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
                     end = 16.dp
                 )
         ) {
-            val (buttons, cards, progress) = createRefs()
-            val characters by viewModel.characters.collectAsStateWithLifecycle()
+            val (locations, characters, characterProgress) = createRefs()
+            val locationUiState by viewModel.locations.collectAsStateWithLifecycle()
+            val characterUiState by viewModel.characters.collectAsStateWithLifecycle()
 
-            LazyRow(
-                modifier = Modifier.constrainAs(buttons) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = 8.dp,
-                    alignment = Alignment.CenterHorizontally
-                )
-            ) {
-                items(10) {
-                    LocationButton(text = "Earth")
-                }
-            }
-
-            when (val result = characters) {
-                NetworkResponse.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.constrainAs(progress) {
-                        top.linkTo(buttons.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    })
-                }
-
-                is NetworkResponse.Error -> {
-                    LaunchedEffect(Unit) {
-                        launch {
-                            snackBarHostState.showSnackbar(
-                                object : SnackbarVisuals {
-                                    override val actionLabel: String
-                                        get() = ""
-                                    override val duration: SnackbarDuration
-                                        get() = SnackbarDuration.Indefinite
-                                    override val message: String
-                                        get() = result.errorMessage
-                                    override val withDismissAction: Boolean
-                                        get() = false
-                                }
-                            )
+            locationUiState.let { uiState ->
+                if (uiState.errorMessage.isNotEmpty()) {
+                    snackBarHostState.ShowSnackBar(errorMessage = uiState.errorMessage)
+                } else {
+                    LazyRow(
+                        modifier = Modifier.constrainAs(locations) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = 8.dp,
+                            alignment = Alignment.CenterHorizontally
+                        )
+                    ) {
+                        if (uiState.isLoading) {
+                            item {
+                                CircularProgressIndicator()
+                            }
+                        } else if (uiState.data.isNotEmpty()) {
+                            items(uiState.data) { location ->
+                                LocationButton(text = location.name)
+                            }
                         }
                     }
                 }
+            }
 
-                is NetworkResponse.Success -> {
+            characterUiState.let { uiState ->
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.constrainAs(characterProgress) {
+                            top.linkTo(locations.bottom)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        },
+                    )
+                } else if (uiState.errorMessage.isNotEmpty()) {
+                    snackBarHostState.ShowSnackBar(errorMessage = uiState.errorMessage)
+                } else if (uiState.data.isNotEmpty()) {
                     LazyColumn(
                         modifier = Modifier
-                            .constrainAs(cards) {
-                                top.linkTo(buttons.bottom)
+                            .constrainAs(characters) {
+                                top.linkTo(locations.bottom)
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
                             }
@@ -135,7 +135,7 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
                             alignment = Alignment.CenterVertically
                         )
                     ) {
-                        items(result.data) { character ->
+                        items(uiState.data) { character ->
                             CharacterCard(
                                 name = character.name,
                                 imageUrl = character.image,
@@ -182,6 +182,27 @@ fun CharacterCard(name: String, imageUrl: String, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
             Text(text = name)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SnackbarHostState.ShowSnackBar(errorMessage: String) {
+    LaunchedEffect(Unit) {
+        launch {
+            this@ShowSnackBar.showSnackbar(
+                object : SnackbarVisuals {
+                    override val actionLabel: String
+                        get() = ""
+                    override val duration: SnackbarDuration
+                        get() = SnackbarDuration.Indefinite
+                    override val message: String
+                        get() = errorMessage
+                    override val withDismissAction: Boolean
+                        get() = false
+                }
+            )
         }
     }
 }

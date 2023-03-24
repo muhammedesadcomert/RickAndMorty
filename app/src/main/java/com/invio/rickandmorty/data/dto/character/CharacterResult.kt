@@ -2,7 +2,7 @@ package com.invio.rickandmorty.data.dto.character
 
 import com.google.gson.annotations.SerializedName
 
-data class Result(
+data class CharacterResult(
     @SerializedName("created")
     val created: String?,
     @SerializedName("episode")
@@ -14,17 +14,24 @@ data class Result(
     @SerializedName("image")
     val image: String?,
     @SerializedName("location")
-    val location: Location?,
+    val location: LocationOrOrigin?,
     @SerializedName("name")
     val name: String?,
     @SerializedName("origin")
-    val origin: Origin?,
+    val origin: LocationOrOrigin?,
     @SerializedName("species")
     val species: String?,
     @SerializedName("status")
     val status: String?,
     @SerializedName("type")
     val type: String?,
+    @SerializedName("url")
+    val url: String?
+)
+
+data class LocationOrOrigin(
+    @SerializedName("name")
+    val name: String?,
     @SerializedName("url")
     val url: String?
 )

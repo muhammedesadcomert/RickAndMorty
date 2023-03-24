@@ -1,10 +1,10 @@
-package com.invio.rickandmorty.data.dto.character
+package com.invio.rickandmorty.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class CharacterResponse(
+data class RickAndMortyResponse<out T>(
     @SerializedName("info")
     val info: Info?,
     @SerializedName("results")
-    val results: List<Result?>?
+    val results: List<T?>?
 )
