@@ -5,12 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -18,16 +14,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import com.invio.rickandmorty.R
-import kotlinx.coroutines.launch
+import com.invio.rickandmorty.domain.model.Character
+import com.invio.rickandmorty.domain.model.Location
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: (Int) -> Unit) {
-    val snackBarHostState = remember { SnackbarHostState() }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -36,32 +33,6 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
                     Text(text = stringResource(id = R.string.app_name))
                 },
             )
-        },
-        snackbarHost = {
-            SnackbarHost(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                hostState = snackBarHostState
-            ) { data ->
-                Snackbar(
-                    action = {
-                        TextButton(
-                            onClick = {
-                                viewModel.run {
-                                    getCharacters()
-                                    getLocations()
-                                }
-                            },
-                        ) {
-                            Text(text = stringResource(R.string.retry))
-                        }
-                    }
-                ) {
-                    Text(
-                        modifier = Modifier.padding(4.dp),
-                        text = data.visuals.message
-                    )
-                }
-            }
         }
     ) { paddingValues ->
         ConstraintLayout(
@@ -74,86 +45,95 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
                     end = 16.dp
                 )
         ) {
-            val (locations, characters, characterProgress) = createRefs()
-            val locationUiState by viewModel.locations.collectAsStateWithLifecycle()
-            val characterUiState by viewModel.characters.collectAsStateWithLifecycle()
+            val (locations, characters) = createRefs()
+            val characterLazyPagingItems = viewModel.getCharacters().collectAsLazyPagingItems()
+            val locationLazyPagingItems = viewModel.getLocations().collectAsLazyPagingItems()
 
-            locationUiState.let { uiState ->
-                if (uiState.errorMessage.isNotEmpty()) {
-                    snackBarHostState.ShowSnackBar(errorMessage = uiState.errorMessage)
-                } else {
-                    LazyRow(
-                        modifier = Modifier.constrainAs(locations) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(
-                            space = 8.dp,
-                            alignment = Alignment.CenterHorizontally
-                        )
-                    ) {
-                        if (uiState.isLoading) {
-                            item {
-                                CircularProgressIndicator()
-                            }
-                        } else if (uiState.data.isNotEmpty()) {
-                            items(uiState.data) { location ->
-                                LocationButton(text = location.name)
-                            }
-                        }
-                    }
+            LocationRow(
+                modifier = Modifier.constrainAs(locations) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+                locationLazyPagingItems = locationLazyPagingItems,
+                onButtonClick = {
+//                    viewModel.getCharactersByLocation(it)
                 }
-            }
+            )
 
-            characterUiState.let { uiState ->
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.constrainAs(characterProgress) {
-                            top.linkTo(locations.bottom)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                    )
-                } else if (uiState.errorMessage.isNotEmpty()) {
-                    snackBarHostState.ShowSnackBar(errorMessage = uiState.errorMessage)
-                } else if (uiState.data.isNotEmpty()) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .constrainAs(characters) {
-                                top.linkTo(locations.bottom)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            }
-                            .padding(top = 8.dp, bottom = 8.dp)
-                            .navigationBarsPadding(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = 8.dp,
-                            alignment = Alignment.CenterVertically
-                        )
-                    ) {
-                        items(uiState.data) { character ->
-                            CharacterCard(
-                                name = character.name,
-                                imageUrl = character.image,
-                                onClick = {
-                                    navigateToCharacterDetail(character.id)
-                                },
-                            )
-                        }
-                    }
+            CharacterColumn(
+                Modifier.constrainAs(characters) {
+                    top.linkTo(locations.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+                characterLazyPagingItems,
+                onCardClick = { id ->
+                    navigateToCharacterDetail(id)
                 }
+            )
+        }
+    }
+}
+
+@Composable
+fun LocationRow(
+    modifier: Modifier,
+    locationLazyPagingItems: LazyPagingItems<Location>,
+    onButtonClick: (Int) -> Unit
+) {
+    LazyRow(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(
+            space = 8.dp,
+            alignment = Alignment.CenterHorizontally
+        )
+    ) {
+        items(locationLazyPagingItems, key = { it.id }) { location ->
+            LocationButton(text = location?.name.orEmpty()) {
+                onButtonClick(location?.id ?: 0)
             }
         }
     }
 }
 
 @Composable
-fun LocationButton(text: String) {
-    Button(onClick = {}) {
+fun CharacterColumn(
+    modifier: Modifier,
+    characterLazyPagingItems: LazyPagingItems<Character>,
+    onCardClick: (Int) -> Unit
+) {
+    LazyColumn(
+        modifier = modifier
+            .padding(top = 8.dp, bottom = 8.dp)
+            .navigationBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(
+            space = 8.dp,
+            alignment = Alignment.CenterVertically
+        )
+    ) {
+        items(
+            characterLazyPagingItems,
+            key = {
+                it.id
+            },
+        ) { character ->
+            CharacterCard(
+                name = character?.name.orEmpty(),
+                imageUrl = character?.image.orEmpty(),
+                onClick = {
+                    onCardClick(character?.id ?: 0)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun LocationButton(text: String, onButtonClick: () -> Unit) {
+    Button(onClick = onButtonClick) {
         Text(text = text)
     }
 }
@@ -182,27 +162,6 @@ fun CharacterCard(name: String, imageUrl: String, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop
             )
             Text(text = name)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SnackbarHostState.ShowSnackBar(errorMessage: String) {
-    LaunchedEffect(Unit) {
-        launch {
-            this@ShowSnackBar.showSnackbar(
-                object : SnackbarVisuals {
-                    override val actionLabel: String
-                        get() = ""
-                    override val duration: SnackbarDuration
-                        get() = SnackbarDuration.Indefinite
-                    override val message: String
-                        get() = errorMessage
-                    override val withDismissAction: Boolean
-                        get() = false
-                }
-            )
         }
     }
 }

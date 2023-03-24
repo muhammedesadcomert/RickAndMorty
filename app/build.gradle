@@ -64,6 +64,11 @@ dependencies {
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
 
+    // Paging
+    implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
+    // Paging for Compose
+    implementation 'androidx.paging:paging-compose:1.0.0-alpha18'
+
     // ConstraintLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 

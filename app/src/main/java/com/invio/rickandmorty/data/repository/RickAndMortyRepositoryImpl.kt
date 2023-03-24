@@ -1,24 +1,38 @@
 package com.invio.rickandmorty.data.repository
 
-import com.invio.rickandmorty.data.dto.RickAndMortyResponse
-import com.invio.rickandmorty.data.dto.character.CharacterResult
-import com.invio.rickandmorty.data.dto.location.LocationResult
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.invio.rickandmorty.data.network.RickAndMortyApi
-import com.invio.rickandmorty.util.NetworkResponse
-import com.invio.rickandmorty.util.SafeApiCall.safeApiCall
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.invio.rickandmorty.data.network.RickAndMortyPagingSource
+import com.invio.rickandmorty.domain.mapper.CharacterMapper
+import com.invio.rickandmorty.domain.mapper.LocationMapper
+import com.invio.rickandmorty.domain.model.Character
+import com.invio.rickandmorty.domain.model.Location
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class RickAndMortyRepositoryImpl @Inject constructor(private val rickAndMortyApi: RickAndMortyApi) :
-    RickAndMortyRepository {
-    override suspend fun getCharacters(): NetworkResponse<RickAndMortyResponse<CharacterResult>> =
-        withContext(Dispatchers.IO) {
-            safeApiCall { rickAndMortyApi.getCharacters() }
-        }
+class RickAndMortyRepositoryImpl @Inject constructor(
+    private val rickAndMortyApi: RickAndMortyApi,
+    private val characterMapper: CharacterMapper,
+    private val locationMapper: LocationMapper
+) : RickAndMortyRepository {
 
-    override suspend fun getLocations(): NetworkResponse<RickAndMortyResponse<LocationResult>> =
-        withContext(Dispatchers.IO) {
-            safeApiCall { rickAndMortyApi.getLocations() }
-        }
+    override fun getCharacters(): Flow<PagingData<Character>> =
+        Pager(PagingConfig(DEFAULT_PAGE_SIZE)) {
+            RickAndMortyPagingSource(characterMapper) { page ->
+                rickAndMortyApi.getCharacters(page)
+            }
+        }.flow
+
+    override fun getLocations(): Flow<PagingData<Location>> =
+        Pager(PagingConfig(DEFAULT_PAGE_SIZE)) {
+            RickAndMortyPagingSource(locationMapper) { page ->
+                rickAndMortyApi.getLocations(page)
+            }
+        }.flow
+
+    companion object {
+        const val DEFAULT_PAGE_SIZE = 20
+    }
 }
