@@ -1,4 +1,4 @@
-package com.invio.rickandmorty.data.dto
+package com.invio.rickandmorty.data.dto.character
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,6 +1,6 @@
 package com.invio.rickandmorty.di
 
-import com.invio.rickandmorty.data.dto.Result
+import com.invio.rickandmorty.data.dto.character.Result
 import com.invio.rickandmorty.domain.mapper.DomainMapper
 import com.invio.rickandmorty.domain.mapper.RickAndMortyMapper
 import com.invio.rickandmorty.domain.model.Character

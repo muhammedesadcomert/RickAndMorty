@@ -1,8 +1,8 @@
-package com.invio.rickandmorty.data.dto
+package com.invio.rickandmorty.data.dto.character
 
 import com.google.gson.annotations.SerializedName
 
-data class Location(
+data class Origin(
     @SerializedName("name")
     val name: String?,
     @SerializedName("url")

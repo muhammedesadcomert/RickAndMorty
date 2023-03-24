@@ -1,6 +1,6 @@
 package com.invio.rickandmorty.domain.mapper
 
-import com.invio.rickandmorty.data.dto.Result
+import com.invio.rickandmorty.data.dto.character.Result
 import com.invio.rickandmorty.domain.model.Character
 import javax.inject.Inject
 
