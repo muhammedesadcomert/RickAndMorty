@@ -10,28 +10,20 @@ import java.io.IOException
 import javax.inject.Inject
 
 class RickAndMortyPagingSource<Dto, DomainModel : Any> @Inject constructor(
-    private val domainMapper: DomainMapper<Dto, DomainModel>,
+    private val mapper: DomainMapper<Dto, DomainModel>,
     private val block: suspend (Int) -> Response<RickAndMortyResponse<Dto>>
 ) : PagingSource<Int, DomainModel>() {
-    override val jumpingSupported: Boolean
-        get() = super.jumpingSupported
-    override val keyReuseSupported: Boolean
-        get() = super.keyReuseSupported
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DomainModel> =
         try {
             val nextPage = params.key ?: 1
             val response = block(nextPage).body()
-            val data = response?.results.orEmpty()
-            if (data.isNotEmpty()) {
-                LoadResult.Page(
-                    data = domainMapper.toDomainList(data.filterNotNull()),
-                    prevKey = if (nextPage >= 1) nextPage - 1 else null,
-                    nextKey = if (response?.info?.next != null) nextPage + 1 else null
-                )
-            } else {
-                LoadResult.Error(Exception("Response data is empty"))
-            }
+            val data = response?.results
+            LoadResult.Page(
+                data = mapper.toDomainList(data),
+                prevKey = if (nextPage >= 1) nextPage - 1 else null,
+                nextKey = if (response?.info?.next != null) nextPage + 1 else null
+            )
         } catch (e: IOException) {
             LoadResult.Error(e)
         } catch (e: HttpException) {
