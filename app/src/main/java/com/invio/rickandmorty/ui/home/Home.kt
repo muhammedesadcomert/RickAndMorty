@@ -141,8 +141,10 @@ fun LocationRow(
         )
     ) {
         items(locationLazyPagingItems, key = { it.id }) { location ->
-            LocationButton(text = location?.name.orEmpty()) {
-                onButtonClick(location?.residents.orEmpty())
+            location?.let {
+                LocationButton(text = it.name) {
+                    onButtonClick(it.residents)
+                }
             }
         }
 
@@ -178,14 +180,16 @@ fun CharacterColumn(
         )
     ) {
         items(characters) { character ->
-            CharacterCard(
-                name = character.name,
-                imageUrl = character.image,
-                gender = character.gender.uppercase(),
-                onClick = {
-                    onCardClick(character.id)
-                },
-            )
+            if (character.name.isNotEmpty() || character.image.isNotEmpty()) {
+                CharacterCard(
+                    name = character.name,
+                    imageUrl = character.image,
+                    gender = character.gender.uppercase(),
+                    onClick = {
+                        onCardClick(character.id)
+                    },
+                )
+            }
         }
     }
 }
