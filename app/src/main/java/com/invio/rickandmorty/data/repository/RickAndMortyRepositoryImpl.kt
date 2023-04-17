@@ -49,6 +49,11 @@ class RickAndMortyRepositoryImpl @Inject constructor(
             }) {
                 is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
                 is NetworkResponse.Success -> {
+                    /*
+                     * This logic checks the response data and if Json is not an array
+                     * transforms it into an array. Because some locations have only one
+                     * Character while others have more than one.
+                     */
                     val gson = Gson()
                     if (result.data is List<*>) {
                         val characterResultList: List<CharacterResult> = gson.fromJson(
