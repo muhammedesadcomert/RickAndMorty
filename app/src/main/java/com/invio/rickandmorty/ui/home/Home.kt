@@ -15,7 +15,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -70,26 +69,20 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
             }
         }
     ) { paddingValues ->
-        ConstraintLayout(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
                     top = paddingValues.calculateTopPadding(),
-                    bottom = paddingValues.calculateBottomPadding(),
                     start = 16.dp,
                     end = 16.dp
                 )
         ) {
-            val (locationRow, characterColumn, characterProgress) = createRefs()
             val characterUiState by viewModel.characters.collectAsStateWithLifecycle()
-            val locationLazyPagingItems = viewModel.getLocations().collectAsLazyPagingItems()
+            val locationLazyPagingItems = viewModel.locations.collectAsLazyPagingItems()
 
             LocationRow(
-                modifier = Modifier.constrainAs(locationRow) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
+                modifier = Modifier,
                 locationLazyPagingItems = locationLazyPagingItems,
                 onButtonClick = {
                     viewModel.getMultipleCharacters(it)
@@ -98,23 +91,14 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
 
             characterUiState.let { uiState ->
                 if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.constrainAs(characterProgress) {
-                            top.linkTo(locationRow.bottom)
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
-                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
                 } else if (uiState.errorMessage.isNotEmpty()) {
                     snackBarHostState.ShowSnackBar(errorMessage = uiState.errorMessage)
                 } else if (uiState.data.isNotEmpty()) {
                     CharacterColumn(
-                        Modifier.constrainAs(characterColumn) {
-                            top.linkTo(locationRow.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        },
+                        Modifier,
                         uiState.data,
                         onCardClick = { id ->
                             navigateToCharacterDetail(id)

@@ -3,13 +3,11 @@ package com.invio.rickandmorty.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.invio.rickandmorty.data.repository.RickAndMortyRepository
 import com.invio.rickandmorty.domain.model.Character
 import com.invio.rickandmorty.domain.model.Location
 import com.invio.rickandmorty.util.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,8 +21,13 @@ class HomeViewModel @Inject constructor(private val repository: RickAndMortyRepo
         MutableStateFlow(HomeUiState<Character>().initial())
     val characters: StateFlow<HomeUiState<Character>> get() = _characters
 
+    private val _locations: MutableStateFlow<PagingData<Location>> =
+        MutableStateFlow(PagingData.empty())
+    val locations: StateFlow<PagingData<Location>> get() = _locations
+
     init {
         getCharacters()
+        getLocations()
     }
 
     fun getCharacters() {
@@ -69,6 +72,11 @@ class HomeViewModel @Inject constructor(private val repository: RickAndMortyRepo
         }
     }
 
-    fun getLocations(): Flow<PagingData<Location>> =
-        repository.getLocations().cachedIn(viewModelScope)
+    fun getLocations() {
+        viewModelScope.launch {
+            repository.getLocations().collect {
+                _locations.value = it
+            }
+        }
+    }
 }
