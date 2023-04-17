@@ -10,8 +10,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +26,7 @@ import coil.compose.AsyncImage
 import com.invio.rickandmorty.R
 import com.invio.rickandmorty.domain.model.Character
 import com.invio.rickandmorty.domain.model.Location
+import com.invio.rickandmorty.util.CharacterGender
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,6 +181,7 @@ fun CharacterColumn(
             CharacterCard(
                 name = character.name,
                 imageUrl = character.image,
+                gender = character.gender.uppercase(),
                 onClick = {
                     onCardClick(character.id)
                 },
@@ -187,7 +191,7 @@ fun CharacterColumn(
 }
 
 @Composable
-fun CharacterCard(name: String, imageUrl: String, onClick: () -> Unit) {
+fun CharacterCard(name: String, imageUrl: String, gender: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -196,12 +200,20 @@ fun CharacterCard(name: String, imageUrl: String, onClick: () -> Unit) {
                 onClick()
             }
     ) {
+        val backgroundColor: Color = when (gender) {
+            CharacterGender.MALE.name -> Color.Cyan
+            CharacterGender.FEMALE.name -> Color(0xFFFF7AA7)
+            CharacterGender.GENDERLESS.name -> Color.Yellow
+            CharacterGender.UNKNOWN.name -> Color.LightGray
+            else -> Color.LightGray
+        }
+
         Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(
-                space = 8.dp,
-                alignment = Alignment.CenterHorizontally
-            )
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AsyncImage(
                 modifier = Modifier.size(100.dp),
@@ -209,7 +221,7 @@ fun CharacterCard(name: String, imageUrl: String, onClick: () -> Unit) {
                 contentDescription = stringResource(R.string.character_image),
                 contentScale = ContentScale.Crop
             )
-            Text(text = name)
+            Text(text = name, color = Color.Black, fontWeight = FontWeight.SemiBold)
         }
     }
 }
