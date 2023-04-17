@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
@@ -139,6 +140,12 @@ fun LocationRow(
         items(locationLazyPagingItems, key = { it.id }) { location ->
             LocationButton(text = location?.name.orEmpty()) {
                 onButtonClick(location?.residents.orEmpty())
+            }
+        }
+
+        if (locationLazyPagingItems.loadState.append is LoadState.Loading) {
+            item {
+                CircularProgressIndicator()
             }
         }
     }
