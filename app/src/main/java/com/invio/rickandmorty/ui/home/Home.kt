@@ -20,11 +20,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImage
 import com.invio.rickandmorty.R
 import com.invio.rickandmorty.domain.model.Character
 import com.invio.rickandmorty.domain.model.Location
+import com.invio.rickandmorty.ui.theme.Yellow
 import com.invio.rickandmorty.util.CharacterGender
 import kotlinx.coroutines.launch
 
@@ -116,6 +117,8 @@ fun LocationRow(
     locationLazyPagingItems: LazyPagingItems<Location>,
     onButtonClick: (List<String>) -> Unit
 ) {
+    var selectedPosition by remember { mutableStateOf(-1) }
+
     LazyRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -124,9 +127,13 @@ fun LocationRow(
             alignment = Alignment.CenterHorizontally
         )
     ) {
-        items(locationLazyPagingItems, key = { it.id }) { location ->
+        itemsIndexed(
+            locationLazyPagingItems,
+            key = { _, location -> location.id }
+        ) { index, location ->
             location?.let {
-                LocationButton(text = it.name) {
+                LocationButton(text = it.name, isSelected = selectedPosition == index) {
+                    selectedPosition = index
                     onButtonClick(it.residents)
                 }
             }
@@ -141,8 +148,21 @@ fun LocationRow(
 }
 
 @Composable
-fun LocationButton(text: String, onButtonClick: () -> Unit) {
-    Button(onClick = onButtonClick) {
+fun LocationButton(text: String, isSelected: Boolean, onButtonClick: () -> Unit) {
+    val (containerColor, contentColor) = if (isSelected) {
+        Pair(Yellow, Color.Black)
+    } else {
+        Pair(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary)
+    }
+
+    Button(
+        modifier = Modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        onClick = onButtonClick
+    ) {
         Text(text = text)
     }
 }
