@@ -12,6 +12,9 @@ interface RickAndMortyApi {
     @GET("character")
     suspend fun getCharacters(): Response<RickAndMortyResponse<CharacterResult>>
 
+    @GET("character/{id}")
+    suspend fun getCharacter(@Path("id") id: String): Response<CharacterResult>
+
     @GET("character/{ids}")
     suspend fun getMultipleCharacters(@Path("ids") ids: String): Response<out Any>
 

@@ -14,6 +14,7 @@ import com.invio.rickandmorty.domain.model.Character
 import com.invio.rickandmorty.domain.model.Location
 import com.invio.rickandmorty.util.NetworkResponse
 import com.invio.rickandmorty.util.SafeApiCall.safeApiCall
+import com.invio.rickandmorty.util.parseIds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -24,28 +25,38 @@ class RickAndMortyRepositoryImpl @Inject constructor(
     private val locationMapper: LocationMapper
 ) : RickAndMortyRepository {
 
-    override fun getCharacters(): Flow<NetworkResponse<List<Character>>> =
-        flow {
-            emit(NetworkResponse.Loading)
+    override fun getCharacters(): Flow<NetworkResponse<List<Character>>> = flow {
+        emit(NetworkResponse.Loading)
 
-            when (val result = safeApiCall { rickAndMortyApi.getCharacters() }) {
-                is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
-                is NetworkResponse.Success -> {
-                    emit(NetworkResponse.Success(characterMapper.toDomainList(result.data.results)))
-                }
-
-                else -> Unit
+        when (val result = safeApiCall { rickAndMortyApi.getCharacters() }) {
+            is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
+            is NetworkResponse.Success -> {
+                emit(NetworkResponse.Success(characterMapper.toDomainList(result.data.results)))
             }
+
+            else -> Unit
         }
+    }
+
+    override fun getCharacter(id: String): Flow<NetworkResponse<Character>> = flow {
+        emit(NetworkResponse.Loading)
+
+        when (val result = safeApiCall { rickAndMortyApi.getCharacter(id) }) {
+            is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
+            is NetworkResponse.Success -> {
+                emit(NetworkResponse.Success(characterMapper.mapToDomainModel(result.data)))
+            }
+
+            else -> Unit
+        }
+    }
 
     override fun getMultipleCharacters(urls: List<String>): Flow<NetworkResponse<List<Character>>> =
         flow {
             emit(NetworkResponse.Loading)
 
             when (val result = safeApiCall {
-                rickAndMortyApi.getMultipleCharacters(
-                    urls.joinToString(separator = ",") { url -> url.substringAfterLast("/") }
-                )
+                rickAndMortyApi.getMultipleCharacters(urls.parseIds())
             }) {
                 is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
                 is NetworkResponse.Success -> {

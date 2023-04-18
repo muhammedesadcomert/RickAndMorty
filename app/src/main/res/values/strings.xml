@@ -3,4 +3,5 @@
     <string name="no_internet_error">Please check your internet connection!</string>
     <string name="character_image">Character image</string>
     <string name="retry">Retry</string>
+    <string name="return_to_previous_screen">Return to previous screen</string>
 </resources>

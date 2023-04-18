@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +32,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: (Int) -> Unit) {
+fun Home(
+    viewModel: HomeViewModel = hiltViewModel(),
+    navigateToCharacterDetail: (String) -> Unit
+) {
     val snackBarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -54,7 +58,6 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
                             onClick = {
                                 viewModel.run {
                                     getCharacters()
-                                    getLocations()
                                 }
                             },
                         ) {
@@ -95,9 +98,9 @@ fun Home(viewModel: HomeViewModel = hiltViewModel(), navigateToCharacterDetail: 
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
-                } else if (uiState.errorMessage.isNotEmpty()) {
+                } else if (uiState.errorMessage != null) {
                     snackBarHostState.ShowSnackBar(errorMessage = uiState.errorMessage)
-                } else if (uiState.data.isNotEmpty()) {
+                } else if (uiState.data != null) {
                     CharacterColumn(
                         Modifier,
                         uiState.data,
@@ -117,7 +120,7 @@ fun LocationRow(
     locationLazyPagingItems: LazyPagingItems<Location>,
     onButtonClick: (List<String>) -> Unit
 ) {
-    var selectedPosition by remember { mutableStateOf(-1) }
+    var selectedPosition by rememberSaveable { mutableStateOf(-1) }
 
     LazyRow(
         modifier = modifier,
@@ -171,7 +174,7 @@ fun LocationButton(text: String, isSelected: Boolean, onButtonClick: () -> Unit)
 fun CharacterColumn(
     modifier: Modifier,
     characters: List<Character>,
-    onCardClick: (Int) -> Unit
+    onCardClick: (String) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
