@@ -82,6 +82,7 @@ fun CharacterDetail(
                 } else if (uiState.data != null) {
                     AsyncImage(
                         modifier = Modifier
+                            .padding(vertical = 20.dp, horizontal = 50.dp)
                             .size(275.dp),
                         model = uiState.data.image,
                         contentDescription = stringResource(id = R.string.character_image),
@@ -102,9 +103,11 @@ fun CharacterDetail(
 
 @Composable
 fun AttributeRow(title: String, text: String) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp, vertical = 5.dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 5.dp)
+    ) {
         TitleText(text = title)
         RegularText(text = text)
     }
