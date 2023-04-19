@@ -89,7 +89,7 @@ fun CharacterDetail(
                 } else if (uiState.data != null) {
                     AsyncImage(
                         modifier = Modifier
-                            .padding(vertical = 20.dp, horizontal = 50.dp)
+                            .padding(top = 20.dp, bottom = 15.dp, start = 50.dp, end = 50.dp)
                             .size(275.dp),
                         model = uiState.data.image,
                         contentDescription = stringResource(id = R.string.character_image),
@@ -101,7 +101,11 @@ fun CharacterDetail(
                     AttributeRow(title = "Origin: ", text = uiState.data.origin)
                     AttributeRow(title = "Location: ", text = uiState.data.location)
                     AttributeRow(title = "Episodes: ", text = uiState.data.episodes)
-                    AttributeRow(title = "Created at: ", text = uiState.data.created)
+                    AttributeRow(
+                        modifier = Modifier.padding(bottom = 15.dp),
+                        title = "Created at: ",
+                        text = uiState.data.created
+                    )
                 }
             }
         }
@@ -109,9 +113,9 @@ fun CharacterDetail(
 }
 
 @Composable
-fun AttributeRow(title: String, text: String) {
+fun AttributeRow(modifier: Modifier = Modifier, title: String, text: String) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 5.dp)
     ) {
