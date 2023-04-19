@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.invio.rickandmorty.R
 import com.invio.rickandmorty.ui.home.ShowSnackBar
+import com.invio.rickandmorty.util.formatDateString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,7 +105,7 @@ fun CharacterDetail(
                     AttributeRow(
                         modifier = Modifier.padding(bottom = 15.dp),
                         title = "Created at: ",
-                        text = uiState.data.created
+                        text = uiState.data.created.formatDateString()
                     )
                 }
             }
