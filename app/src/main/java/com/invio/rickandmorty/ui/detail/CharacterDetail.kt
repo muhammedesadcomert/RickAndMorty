@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,7 +55,7 @@ fun CharacterDetail(
             TopAppBar(
                 title = {
                     character.data?.let {
-                        Text(text = it.name)
+                        Text(text = it.name, fontFamily = FontFamily(Font(R.font.avenir_regular)))
                     }
                 },
                 navigationIcon = {
@@ -120,10 +122,19 @@ fun AttributeRow(title: String, text: String) {
 
 @Composable
 fun TitleText(text: String) {
-    Text(text = text, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    Text(
+        text = text,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily(Font(R.font.avenir_regular))
+    )
 }
 
 @Composable
 fun RegularText(text: String) {
-    Text(text = text.replaceFirstChar { it.uppercase() }, fontSize = 22.sp)
+    Text(
+        text = text.replaceFirstChar { it.uppercase() },
+        fontSize = 22.sp,
+        fontFamily = FontFamily(Font(R.font.avenir_regular))
+    )
 }
