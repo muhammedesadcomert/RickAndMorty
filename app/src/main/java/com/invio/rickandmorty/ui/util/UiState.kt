@@ -1,4 +1,4 @@
-package com.invio.rickandmorty.ui
+package com.invio.rickandmorty.ui.util
 
 data class UiState<T>(
     val data: T? = null,

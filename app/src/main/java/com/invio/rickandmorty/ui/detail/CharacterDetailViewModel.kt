@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.invio.rickandmorty.data.repository.RickAndMortyRepository
 import com.invio.rickandmorty.domain.model.Character
-import com.invio.rickandmorty.ui.UiState
+import com.invio.rickandmorty.ui.util.UiState
 import com.invio.rickandmorty.util.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
