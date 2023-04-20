@@ -1,6 +1,7 @@
 package com.invio.rickandmorty.util
 
-enum class Screen {
-    HOME,
-    CHARACTER_DETAIL
+sealed class Screen(val route: String) {
+    object Splash : Screen("splash")
+    object Home : Screen("home")
+    object CharacterDetail : Screen("character_detail")
 }

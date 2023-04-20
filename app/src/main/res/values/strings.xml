@@ -4,4 +4,7 @@
     <string name="character_image">Character image</string>
     <string name="retry">Retry</string>
     <string name="return_to_previous_screen">Return to previous screen</string>
+    <string name="splash_screen">Splash Screen</string>
+    <string name="welcome">Welcome!</string>
+    <string name="hello">Hello!</string>
 </resources>
