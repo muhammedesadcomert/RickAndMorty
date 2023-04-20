@@ -1,12 +1,12 @@
 package com.invio.rickandmorty.domain.mapper
 
-import com.invio.rickandmorty.data.dto.character.CharacterResult
+import com.invio.rickandmorty.data.dto.CharacterResponse
 import com.invio.rickandmorty.domain.model.Character
 import com.invio.rickandmorty.util.parseIdsWithWhiteSpaces
 import javax.inject.Inject
 
-class CharacterMapper @Inject constructor() : DomainMapper<CharacterResult, Character> {
-    override fun mapToDomainModel(data: CharacterResult?) = Character(
+class CharacterMapper @Inject constructor() : DomainMapper<CharacterResponse, Character> {
+    override fun mapToDomainModel(data: CharacterResponse?) = Character(
         id = data?.id.toString(),
         name = data?.name.orEmpty(),
         image = data?.image.orEmpty(),
@@ -19,6 +19,6 @@ class CharacterMapper @Inject constructor() : DomainMapper<CharacterResult, Char
         created = data?.created.orEmpty()
     )
 
-    override fun toDomainList(initial: List<CharacterResult?>?): List<Character> =
+    override fun toDomainList(initial: List<CharacterResponse?>?): List<Character> =
         initial?.mapNotNull(this::mapToDomainModel).orEmpty()
 }

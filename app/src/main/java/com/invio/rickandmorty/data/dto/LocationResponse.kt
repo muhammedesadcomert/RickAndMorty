@@ -1,8 +1,8 @@
-package com.invio.rickandmorty.data.dto.location
+package com.invio.rickandmorty.data.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class LocationResult(
+data class LocationResponse(
     @SerializedName("created")
     val created: String?,
     @SerializedName("dimension")

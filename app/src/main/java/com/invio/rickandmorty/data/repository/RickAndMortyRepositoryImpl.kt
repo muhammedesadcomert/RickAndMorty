@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.invio.rickandmorty.data.dto.character.CharacterResult
+import com.invio.rickandmorty.data.dto.CharacterResponse
 import com.invio.rickandmorty.data.network.RickAndMortyApi
 import com.invio.rickandmorty.data.network.RickAndMortyPagingSource
 import com.invio.rickandmorty.domain.mapper.CharacterMapper
@@ -67,21 +67,21 @@ class RickAndMortyRepositoryImpl @Inject constructor(
                      */
                     val gson = Gson()
                     if (result.data is List<*>) {
-                        val characterResultList: List<CharacterResult> = gson.fromJson(
+                        val characterResponseLists: List<CharacterResponse> = gson.fromJson(
                             gson.toJson(result.data),
-                            object : TypeToken<List<CharacterResult>>() {}.type
+                            object : TypeToken<List<CharacterResponse>>() {}.type
                         )
                         emit(
                             NetworkResponse.Success(
-                                characterMapper.toDomainList(characterResultList)
+                                characterMapper.toDomainList(characterResponseLists)
                             )
                         )
                     } else {
-                        val characterResult =
-                            gson.fromJson(gson.toJson(result.data), CharacterResult::class.java)
+                        val characterResponse =
+                            gson.fromJson(gson.toJson(result.data), CharacterResponse::class.java)
                         emit(
                             NetworkResponse.Success(
-                                characterMapper.toDomainList(listOf(characterResult))
+                                characterMapper.toDomainList(listOf(characterResponse))
                             )
                         )
                     }
