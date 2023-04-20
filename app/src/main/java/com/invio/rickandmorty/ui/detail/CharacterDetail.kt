@@ -1,6 +1,5 @@
 package com.invio.rickandmorty.ui.detail
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,7 +41,7 @@ import com.invio.rickandmorty.util.formatDateString
 @Composable
 fun CharacterDetail(
     viewModel: CharacterDetailViewModel = hiltViewModel(),
-    characterId: String,
+    characterId: String = "1",
     navigateToBack: () -> Unit
 ) {
     if (characterId.isNotEmpty()) {
@@ -71,13 +71,11 @@ fun CharacterDetail(
             )
         }
     ) { paddingValues ->
-        val scrollState = remember { ScrollState(0) }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(scrollState),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             character.let { uiState ->
