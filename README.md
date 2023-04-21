@@ -3,6 +3,8 @@
 A Rick and Morty application where you can filter characters by location and view their details
 easily.
 
+## Demo
+
 <img width="33%" src="https://user-images.githubusercontent.com/46245749/233591260-7eb0f654-bb9f-4be4-b33b-4af4624ee2d3.mp4">
 
 ## 🛠 Tech Stack & Open-Source Libraries
