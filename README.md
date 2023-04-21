@@ -8,6 +8,7 @@ A Rick and Morty application where you can filter characters by location and vie
 - 100% [Kotlin](https://kotlinlang.org/) based + Designed with [Jetpack Compose](https://developer.android.com/jetpack/compose) UI Toolkit.
 - [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - A coroutine is a
   concurrency design pattern that can use on Android to simplify code that executes asynchronously.
+- [Flow](https://kotlinlang.org/docs/flow.html) - An asynchronous data stream that sequentially emits values and completes normally or with an exception.
 - [MVVM Architecture](https://developer.android.com/topic/architecture#recommended-app-arch) -
   Modern, maintainable, and Google-suggested app architecture.
 - Android Architecture Components - Collection of libraries that help you design robust, testable,
