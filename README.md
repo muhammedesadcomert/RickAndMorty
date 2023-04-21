@@ -64,3 +64,15 @@ rickandmorty/      # Root package
 |
 ├─ util/           # Common utility objects
 ```
+
+## Splash Screen Changes in Android 12
+
+![image](https://user-images.githubusercontent.com/46245749/233596683-4a7fabda-8662-4113-b483-002b50d29d88.png)
+
+Starting from Android 12, a default Splash screen is shown for all apps, which cannot be customized or disabled. This means that any custom Splash screens that were previously used in your app will no longer be visible on devices running Android 12 and later versions.
+
+However, this creates a challenge for apps that support both Android 11 and lower versions, as well as Android 12 and higher versions. In my Rick and Morty project, I have implemented the desired splash screen for Android 11 and lower versions, while also using the new Splash API for Android 12 and higher versions.
+
+As you can see, the Welcome and Hello texts appear on Android 11 and below, while only the logo appears on Android 12 and above.
+
+For more information on the subject, you can visit [here](https://developer.android.com/develop/ui/views/launch/splash-screen).
