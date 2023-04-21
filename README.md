@@ -3,9 +3,9 @@
 A Rick and Morty application where you can filter characters by location and view their details
 easily.
 
-## 🛠 Tech Stack & Open-Source Libraries
+<img width="33%" src="https://user-images.githubusercontent.com/46245749/233591260-7eb0f654-bb9f-4be4-b33b-4af4624ee2d3.mp4">
 
-<img align="right" width="33%" src="https://user-images.githubusercontent.com/46245749/233591260-7eb0f654-bb9f-4be4-b33b-4af4624ee2d3.mp4">
+## 🛠 Tech Stack & Open-Source Libraries
 
 - Minimum SDK level 21.
 - 100% [Kotlin](https://kotlinlang.org/) based + Designed
