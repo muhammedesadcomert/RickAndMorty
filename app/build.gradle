@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.invio.rickandmorty'
+    namespace 'com.muhammedesadcomert.rickandmorty'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.invio.rickandmorty"
+        applicationId "com.muhammedesadcomert.rickandmorty"
         minSdk 21
         targetSdk 33
         versionCode 1
