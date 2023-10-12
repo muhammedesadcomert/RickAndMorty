@@ -59,10 +59,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(
-    viewModel: HomeViewModel = hiltViewModel(),
-    navigateToCharacterDetail: (String) -> Unit
-) {
+fun Home(navigateToCharacterDetail: (String) -> Unit) {
+    val viewModel: HomeViewModel = hiltViewModel()
     val snackBarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -266,7 +264,7 @@ fun CharacterCard(name: String, imageUrl: String, gender: String, onClick: () ->
 
 @Composable
 fun SnackbarHostState.ShowSnackBar(errorMessage: String) {
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key1 = errorMessage) {
         launch {
             this@ShowSnackBar.showSnackbar(
                 object : SnackbarVisuals {

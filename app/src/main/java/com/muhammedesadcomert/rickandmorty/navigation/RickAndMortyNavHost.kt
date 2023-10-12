@@ -21,20 +21,29 @@ fun RickAndMortyNavHost(navController: NavHostController) {
         }
     ) {
         composable(Screen.Splash.route) {
-            SplashScreen {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.Splash.route) { inclusive = true }
+            SplashScreen(
+                navigateToHome = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
                 }
-            }
+            )
         }
         composable(Screen.Home.route) {
-            Home {
-                navController.navigate(Screen.CharacterDetail.route + "/$it")
-            }
+            Home(
+                navigateToCharacterDetail = { characterId ->
+                    navController.navigate(Screen.CharacterDetail.route + "/$characterId")
+                }
+            )
         }
         composable(Screen.CharacterDetail.route + "/{characterId}") {
-            CharacterDetail(characterId = it.arguments?.getString("characterId").orEmpty()) {
-                navController.popBackStack()
+            it.arguments?.getString("characterId")?.let { characterId ->
+                CharacterDetail(
+                    characterId = characterId,
+                    navigateToBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

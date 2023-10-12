@@ -24,7 +24,8 @@ import com.muhammedesadcomert.rickandmorty.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(viewModel: SplashViewModel = hiltViewModel(), navigateToHome: () -> Unit) {
+fun SplashScreen(navigateToHome: () -> Unit) {
+    val viewModel: SplashViewModel = hiltViewModel()
     val welcomeText = stringResource(R.string.welcome)
     val helloText = stringResource(R.string.hello)
     val text = remember {

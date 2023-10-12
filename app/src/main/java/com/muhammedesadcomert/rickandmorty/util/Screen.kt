@@ -1,7 +1,7 @@
 package com.muhammedesadcomert.rickandmorty.util
 
 sealed class Screen(val route: String) {
-    object Splash : Screen("splash")
-    object Home : Screen("home")
-    object CharacterDetail : Screen("character_detail")
+    data object Splash : Screen("splash")
+    data object Home : Screen("home")
+    data object CharacterDetail : Screen("character_detail")
 }
