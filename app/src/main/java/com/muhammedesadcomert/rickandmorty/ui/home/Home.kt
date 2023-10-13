@@ -55,7 +55,6 @@ import com.muhammedesadcomert.rickandmorty.domain.model.Character
 import com.muhammedesadcomert.rickandmorty.domain.model.Location
 import com.muhammedesadcomert.rickandmorty.ui.theme.Yellow
 import com.muhammedesadcomert.rickandmorty.util.CharacterGender
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -265,19 +264,17 @@ fun CharacterCard(name: String, imageUrl: String, gender: String, onClick: () ->
 @Composable
 fun SnackbarHostState.ShowSnackBar(errorMessage: String) {
     LaunchedEffect(key1 = errorMessage) {
-        launch {
-            this@ShowSnackBar.showSnackbar(
-                object : SnackbarVisuals {
-                    override val actionLabel: String
-                        get() = ""
-                    override val duration: SnackbarDuration
-                        get() = SnackbarDuration.Indefinite
-                    override val message: String
-                        get() = errorMessage
-                    override val withDismissAction: Boolean
-                        get() = false
-                }
-            )
-        }
+        this@ShowSnackBar.showSnackbar(
+            object : SnackbarVisuals {
+                override val actionLabel: String
+                    get() = ""
+                override val duration: SnackbarDuration
+                    get() = SnackbarDuration.Indefinite
+                override val message: String
+                    get() = errorMessage
+                override val withDismissAction: Boolean
+                    get() = false
+            }
+        )
     }
 }

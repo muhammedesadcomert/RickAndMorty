@@ -25,34 +25,38 @@ class RickAndMortyRepositoryImpl @Inject constructor(
     private val locationMapper: LocationMapper
 ) : RickAndMortyRepository {
 
-    override fun getCharacters(): Flow<NetworkResponse<List<Character>>> = flow {
-        emit(NetworkResponse.Loading)
+    override fun getCharacters(): Flow<NetworkResponse<List<Character>>> {
+        return flow {
+            emit(NetworkResponse.Loading)
 
-        when (val result = safeApiCall { rickAndMortyApi.getCharacters() }) {
-            is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
-            is NetworkResponse.Success -> {
-                emit(NetworkResponse.Success(characterMapper.toDomainList(result.data.results)))
+            when (val result = safeApiCall { rickAndMortyApi.getCharacters() }) {
+                is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
+                is NetworkResponse.Success -> {
+                    emit(NetworkResponse.Success(characterMapper.toDomainList(result.data.results)))
+                }
+
+                else -> Unit
             }
-
-            else -> Unit
         }
     }
 
-    override fun getCharacter(id: String): Flow<NetworkResponse<Character>> = flow {
-        emit(NetworkResponse.Loading)
+    override fun getCharacter(id: String): Flow<NetworkResponse<Character>> {
+        return flow {
+            emit(NetworkResponse.Loading)
 
-        when (val result = safeApiCall { rickAndMortyApi.getCharacter(id) }) {
-            is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
-            is NetworkResponse.Success -> {
-                emit(NetworkResponse.Success(characterMapper.mapToDomainModel(result.data)))
+            when (val result = safeApiCall { rickAndMortyApi.getCharacter(id) }) {
+                is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
+                is NetworkResponse.Success -> {
+                    emit(NetworkResponse.Success(characterMapper.mapToDomainModel(result.data)))
+                }
+
+                else -> Unit
             }
-
-            else -> Unit
         }
     }
 
-    override fun getMultipleCharacters(urls: List<String>): Flow<NetworkResponse<List<Character>>> =
-        flow {
+    override fun getMultipleCharacters(urls: List<String>): Flow<NetworkResponse<List<Character>>> {
+        return flow {
             emit(NetworkResponse.Loading)
 
             when (val result = safeApiCall {
@@ -61,10 +65,10 @@ class RickAndMortyRepositoryImpl @Inject constructor(
                 is NetworkResponse.Error -> emit(NetworkResponse.Error(result.errorMessage))
                 is NetworkResponse.Success -> {
                     /*
-                     * This logic checks the response data and if Json is not an array
-                     * transforms it into an array. Because some locations have only one
-                     * Character while others have more than one.
-                     */
+                         * This logic checks the response data and if Json is not an array
+                         * transforms it into an array. Because some locations have only one
+                         * Character while others have more than one.
+                         */
                     val gson = Gson()
                     if (result.data is List<*>) {
                         val characterResponseLists: List<CharacterResponse> = gson.fromJson(
@@ -90,13 +94,15 @@ class RickAndMortyRepositoryImpl @Inject constructor(
                 else -> Unit
             }
         }
+    }
 
-    override fun getLocations(): Flow<PagingData<Location>> =
-        Pager(PagingConfig(DEFAULT_PAGE_SIZE)) {
+    override fun getLocations(): Flow<PagingData<Location>> {
+        return Pager(PagingConfig(DEFAULT_PAGE_SIZE)) {
             RickAndMortyPagingSource(locationMapper) { page ->
                 rickAndMortyApi.getLocations(page)
             }
         }.flow
+    }
 
     companion object {
         const val DEFAULT_PAGE_SIZE = 20
